@@ -72,7 +72,7 @@ resource "aws_dynamodb_table" "default" {
   }
 
   dynamic "attribute" {
-    for_each = local.attributes_final
+    for_each = local.dynamodb_attributes
     content {
       name = attribute.value.name
       type = attribute.value.type
