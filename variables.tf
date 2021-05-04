@@ -79,6 +79,12 @@ variable "stream_view_type" {
   description = "When an item in the table is modified, what information is written to the stream"
 }
 
+variable "table_name" {
+  type        = string
+  default     = ""
+  description = "(Optional) The name of the table, this needs to be unique within a region. If not set, a dyanmic name will be generated"
+}
+
 variable "enable_encryption" {
   type        = bool
   default     = true
