@@ -45,10 +45,14 @@ resource "null_resource" "local_secondary_index_names" {
 
 resource "aws_dynamodb_table" "default" {
   count            = local.enabled ? 1 : 0
+<<<<<<< HEAD
   name             = var.name != "" ? format("%s%s", var.environment, var.name) : module.this.id
+=======
+  name             = var.table_name != "" ? join("${var.environment}", [var.table_name]) : module.this.id
+>>>>>>> e7ba39bc8d6ba38bb58dd93a05850233ddb0d1d5
   billing_mode     = var.billing_mode
-  read_capacity    = var.autoscale_min_read_capacity
-  write_capacity   = var.autoscale_min_write_capacity
+  read_capacity    = var.billing_mode == "PAY_PER_REQUEST" ? null : var.autoscale_min_read_capacity
+  write_capacity   = var.billing_mode == "PAY_PER_REQUEST" ? null : var.autoscale_min_write_capacity
   hash_key         = var.hash_key
   range_key        = var.range_key
   stream_enabled   = length(var.replicas) > 0 ? true : var.enable_streams
@@ -109,21 +113,24 @@ resource "aws_dynamodb_table" "default" {
     }
   }
 
-  ttl {
-    attribute_name = var.ttl_attribute
-    enabled        = var.ttl_attribute != "" && var.ttl_attribute != null ? true : false
+  dynamic "ttl" {
+    for_each = var.ttl_enabled ? [1] : []
+    content {
+      attribute_name = var.ttl_attribute
+      enabled        = var.ttl_enabled
+    }
   }
 
-  tags = module.this.tags
+  tags = var.tags_enabled ? module.this.tags : null
 }
 
 module "dynamodb_autoscaler" {
   source  = "cloudposse/dynamodb-autoscaler/aws"
-  version = "0.11.0"
+  version = "0.14.0"
   enabled = local.enabled && var.enable_autoscaler && var.billing_mode == "PROVISIONED"
 
   attributes                   = concat(module.this.attributes, var.autoscaler_attributes)
-  tags                         = merge(module.this.tags, var.autoscaler_tags)
+  tags                         = var.tags_enabled ? merge(module.this.tags, var.autoscaler_tags) : null
   dynamodb_table_name          = join("", aws_dynamodb_table.default.*.id)
   dynamodb_table_arn           = join("", aws_dynamodb_table.default.*.arn)
   dynamodb_indexes             = length(var.local_secondary_index_map) > 0 ? null_resource.global_secondary_index_names.*.triggers.name : []

@@ -79,11 +79,19 @@ variable "stream_view_type" {
   description = "When an item in the table is modified, what information is written to the stream"
 }
 
+<<<<<<< HEAD
 # variable "table_name" {
 #   type        = string
 #   default     = ""
 #   description = "(Optional) The name of the table, this needs to be unique within a region. If not set, a dyanmic name will be generated"
 # }
+=======
+variable "table_name" {
+  type        = string
+  default     = ""
+  description = "(Optional) The name of the table, this needs to be unique within a region. If not set, a dyanmic name will be generated"
+}
+>>>>>>> e7ba39bc8d6ba38bb58dd93a05850233ddb0d1d5
 
 variable "enable_encryption" {
   type        = bool
@@ -130,6 +138,12 @@ variable "ttl_attribute" {
   type        = string
   default     = "Expires"
   description = "DynamoDB table TTL attribute"
+}
+
+variable "ttl_enabled" {
+  type        = bool
+  default     = true
+  description = "Set to false to disable DynamoDB table TTL"
 }
 
 variable "enable_autoscaler" {
@@ -188,4 +202,10 @@ variable "replicas" {
   type        = list(string)
   default     = []
   description = "List of regions to create replica"
+}
+
+variable "tags_enabled" {
+  type        = bool
+  default     = true
+  description = "Set to `false` to disable tagging. This can be helpful if you're managing tables on dynamodb-local with terraform as it doesn't support tagging."
 }
