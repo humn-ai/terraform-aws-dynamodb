@@ -45,11 +45,7 @@ resource "null_resource" "local_secondary_index_names" {
 
 resource "aws_dynamodb_table" "default" {
   count            = local.enabled ? 1 : 0
-<<<<<<< HEAD
-  name             = var.name != "" ? format("%s%s", var.environment, var.name) : module.this.id
-=======
   name             = var.table_name != "" ? join("${var.environment}", [var.table_name]) : module.this.id
->>>>>>> e7ba39bc8d6ba38bb58dd93a05850233ddb0d1d5
   billing_mode     = var.billing_mode
   read_capacity    = var.billing_mode == "PAY_PER_REQUEST" ? null : var.autoscale_min_read_capacity
   write_capacity   = var.billing_mode == "PAY_PER_REQUEST" ? null : var.autoscale_min_write_capacity
